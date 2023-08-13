@@ -11,3 +11,8 @@ utils 中包含对游戏的IO操作, 根据库的不同, 可以利用pywin32或p
 UI 通过web连接电脑与手机, 对程序进行控制.
 
 Model 集成AI方法, 自动化控制游戏.
+
+``` bash
+cd Game
+python Game.py
+```

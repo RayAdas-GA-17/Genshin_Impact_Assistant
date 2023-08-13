@@ -8,9 +8,9 @@
 
 import pyautogui as pag
 import win32gui as wgui
-import win32api as wapi
-import win32con as wcon
-import pydirectinput
+# import win32api as wapi
+# import win32con as wcon
+# import pydirectinput
 from pyperclip import copy
 
 
