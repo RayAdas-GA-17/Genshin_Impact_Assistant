@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>原神助手</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"
+        integrity="sha512-zoJXRvW2gC8Z0Xo3lBbao5+AS3g6YWr5ztKqaicua11xHo+AvE1b0lT9ODgrHTmNUxeCw0Ry4BGRYZfXu70weg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        /* 样式可以根据你的需要进行调整 */
+        #logContainer {
+            width: 100%;
+            height: 300px;
+            overflow: auto;
+            border: 1px solid #ccc;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        #logTextarea {
+            width: 90%;
+        }
+
+        #inputContainer {
+            display: flex;
+            align-items: center;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 5px;
+        }
+
+        #sendButton {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>原神助手</h1>
+    <h2>日志</h2>
+    <div id="logContainer">
+        <textarea id="logTextarea" rows="10" placeholder="..." readonly></textarea>
+    </div>
+    <h2>输入指令</h2>
+    <div id="inputContainer">
+        <input type="text" id="messageInput" placeholder="输入指令">
+        <button type="button" id="sendButton">发送</button>
+    </div>
+    <a href="/close">关闭</a>
+
+    <script>
+        const logTextarea = document.getElementById('logTextarea');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const maxLines = 100; // 最大文本行数
+
+        function appendLog(message) {
+            const currentContent = logTextarea.value;
+            const newContent = currentContent + message + '\n';
+
+            const lines = newContent.split('\n');
+            if (lines.length > maxLines) {
+                lines.shift();
+            }
+
+            logTextarea.value = lines.join('\n');
+            logTextarea.scrollTop = logTextarea.scrollHeight;
+        }
+
+        var url = 'http://' + document.domain + ':' + location.port
+        const socket = io.connect(url);
+
+        // if (socket.connected) {
+        //     appendLog(url + " 连接成功");
+        // } else {
+        //     appendLog(url + " 连接失败");
+        // }
+
+        socket.on('message', (data) => {
+            appendLog("o>" + data.message);
+        });
+
+        function sendMessage() {
+            const message = messageInput.value;
+            if (message) {
+                if (!socket.connected) {
+                    appendLog('i> ' + url + " 未连接");
+                } else {
+                    socket.emit('message', { message });
+                    appendLog("> " + message)
+                    messageInput.value = "";
+                }
+            }
+        }
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+               sendMessage();
+            }
+        });
+    </script>
+</body>
+
+</html>
